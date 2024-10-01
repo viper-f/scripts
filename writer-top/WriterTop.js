@@ -47,9 +47,10 @@ class WriterTop {
         let i = 0;
         while (c && i < postData.length) {
             const postDatum = postData[i];
-            if (postDatum['posted'] < this.startDate && postDatum['id'] !== initPostId) {
-                if (this.users['user_id']) {
-                    this.users['user_id'] = {
+            postDatum['posted'] = parseInt(postDatum['posted'])
+            if (postDatum['posted'] >= this.startDate && postDatum['id'] !== initPostId) {
+                if (!this.users[postDatum['user_id']]) {
+                    this.users[postDatum['user_id']] = {
                         "user_id": postDatum['user_id'],
                         "user_name": postDatum['username'],
                         "count": 0
@@ -58,7 +59,7 @@ class WriterTop {
                 }
                 this.users[postDatum['user_id']].count += 1;
                 this.posts[postDatum['user_id']].push({
-                    "post_id": postDatum['post_id'],
+                    "post_id": postDatum['id'],
                     "user_id": postDatum['user_id'],
                     "subject": postDatum['subject'],
                     "posted": postDatum['posted']
@@ -80,7 +81,9 @@ class WriterTop {
      */
     async apiCall(method, filters = null, fields = [], sortBy = null) {
         const response = await fetch(this.combineUrl(method, filters, fields, sortBy))
-        return response.json()
+        const j = await response.json()
+        return j['response']
+      //  return response.json()
     }
 
     combineUrl(method, filters = null, fields = [], sortBy = null)
