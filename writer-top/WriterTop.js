@@ -2,7 +2,7 @@ class WriterTop {
     constructor(forums, startDate, endDate = null) {
         this.forumIds = forums;
         this.startDate = this.toTimestamp(startDate);
-        this.endDate = endDate ?? this.toTimestamp(endDate);
+        this.endDate = endDate ? this.toTimestamp(endDate) : null;
         this.users = {};
         this.posts = {};
     }
@@ -27,7 +27,6 @@ class WriterTop {
 
     async execute(div_id) {
         await this.processTopics();
-        console.log(this)
         document.getElementById(div_id).innerHTML = this.render();
     }
 
@@ -57,7 +56,6 @@ class WriterTop {
         topicData =  await topicData.flat(1)
 
         topicData = topicData.filter((topic) => {return parseInt(topic['last_post_date']) > this.startDate})
-        console.log(topicData);
 
         await Promise.all(topicData.map(async (topicDatum) => {
             const result = await this.findPosts(topicDatum['id'], topicDatum['init_post']);
@@ -67,7 +65,6 @@ class WriterTop {
     async findPosts(topicId, initPostId) {
         const postData = await this.apiCall('post.get', {"topic_id": topicId},
             ["id", "user_id", "username", "subject", "posted"], 'posted', 'desc');
-        console.log(postData)
         let c = true;
         let i = 0;
         while (c && i < postData.length) {
@@ -75,6 +72,7 @@ class WriterTop {
             postDatum['posted'] = parseInt(postDatum['posted'])
             if (postDatum['posted'] >= this.startDate && postDatum['id'] !== initPostId) {
                 if(this.endDate && postDatum['posted'] > this.endDate) {
+                     i+=1;
                     continue;
                 }
                 if (!this.users[postDatum['user_id']]) {
