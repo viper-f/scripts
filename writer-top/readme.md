@@ -1,4 +1,4 @@
-Writer Top is a script that allows you to quickly find the users on your forums who have written the most posts during a specific period 
+Writer Top is a script that allows you to quickly find the users on your forum who have written the most posts during a specific period 
 of time.   
   
 To install the script, create a new page on your forum and copy the code from the "page.html" file there. Replace the forumIDs with the ids
