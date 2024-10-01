@@ -129,3 +129,7 @@ class WriterTop {
     }
 
 }
+
+if (typeof exports !== 'undefined') {
+    module.exports = { WriterTop };
+}
