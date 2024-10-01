@@ -13,17 +13,17 @@ class WriterTop {
 
     render() {
         let html = '';
-        const users = Object.entries(this.users).values();
+        const users = Object.values(this.users);
         users.sort((a, b) => {
-            if (a.count > b.count) return 1;
-            if (a.count < b.count) return -1;
+            if (a.count < b.count) return 1;
+            if (a.count > b.count) return -1;
             if (a.count === b.count) return 0;
         })
         users.forEach((user) => {
             const userPosts = this.posts[user['user_id']];
-            html += `<div><span>${user['name']}</span><span>${user['count']}</span><span><ul>`;
+            html += `<div><span>${user['user_name']}</span><span>${user['count']}</span><span><ul>`;
             userPosts.forEach((post) => {
-                html += `<li><a href="/viewtopic.php?pid=${post['id']}">${post['subject']} (${post['posted']})</a></li>`
+                html += `<li><a href="/viewtopic.php?pid=${post['post_id']}">${post['subject']} (${post['posted']})</a></li>`
             })
             html += `</ul></span></div>`
         })
@@ -98,3 +98,5 @@ class WriterTop {
         })
     }
 }
+
+module.exports = WriterTop;
