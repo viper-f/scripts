@@ -79,6 +79,12 @@ class WriterTop {
      * @param sortBy = string
      */
     async apiCall(method, filters = null, fields = [], sortBy = null) {
+        const response = await fetch(this.combineUrl(method, filters, fields, sortBy))
+        return response.json()
+    }
+
+    combineUrl(method, filters = null, fields = [], sortBy = null)
+    {
         let url = '/api.php?method='+method;
         if (filters) {
             for (const [key, value] of Object.entries(filters)) {
@@ -92,11 +98,10 @@ class WriterTop {
         if (sortBy) {
             url += '&sort_by='+sortBy;
         }
-
-        fetch(url).then((response) => {
-            return response
-        })
+        return url;
     }
+
+
 }
 
 module.exports = WriterTop;

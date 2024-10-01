@@ -1,6 +1,5 @@
 const WriterTop = require("../../writer-top/WriterTop.js")
-
-test('Test render', () => {
+test('test render()', () => {
     const top = new WriterTop(1, 0)
     top.users = {
         1: {
@@ -37,4 +36,24 @@ test('Test render', () => {
         ]
     }
     expect(top.render()).toBe('<div><span>Test2</span><span>2</span><span><ul><li><a href="/viewtopic.php?pid=1">Test topic (80)</a></li><li><a href="/viewtopic.php?pid=3">Test topic (200)</a></li></ul></span></div><div><span>Test</span><span>1</span><span><ul><li><a href="/viewtopic.php?pid=2">Test topic (100)</a></li></ul></span></div>')
+})
+
+test('test apiCall()', async () => {
+    global.fetch = jest.fn().mockImplementation(() =>  Promise.resolve({ json: () => Promise.resolve({ "data": 100 })}));
+    const top = new WriterTop(1, 0)
+    const response = await top.apiCall('topic.get')
+    expect(response).toStrictEqual({"data": 100})
+    global.fetch.mockClear();
+    delete global.fetch;
+})
+
+test('test combineUrl', () => {
+    const top = new WriterTop(1, 0)
+    expect(top.combineUrl('post.get')).toBe('/api.php?method=post.get')
+    expect(top.combineUrl('post.get', {"topic_id": 25})).toBe('/api.php?method=post.get&topic_id=25')
+    expect(top.combineUrl('post.get', null, ['post_id'])).toBe('/api.php?method=post.get&fields=post_id')
+    expect(top.combineUrl('post.get', null, ['post_id', 'username'])).toBe('/api.php?method=post.get&fields=post_id,username')
+    expect(top.combineUrl('post.get', {"topic_id": 25}, ['post_id', 'username'], 'posted'))
+        .toBe('/api.php?method=post.get&topic_id=25&fields=post_id,username&sort_by=posted')
+
 })
