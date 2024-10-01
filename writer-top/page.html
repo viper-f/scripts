@@ -1,7 +1,8 @@
 Start date*: <input type="text" id="writer-top-start-date" placeholder="2011-01-01 01:01:01">
 End date: <input type="text" id="writer-top-end-date" placeholder="2011-02-02 02:02:02">
-<button onclick="writerTopCalculate()">Get TOP Writers</button>
+<button type="button" onclick="writerTopCalculate()">Get TOP Writers</button>
 <div id="writer-top"></div>
+<div id="writer-summary">Всего написано постов: <span id="writer-summary-numb" class="writer-summary-numb"></span></div>
 <script src="https://cdn.jsdelivr.net/gh/viper-f/scripts@latest/writer-top/WriterTop.js"></script>
 <script>
   const forumIDs = [1,12,5,25,3]
@@ -9,6 +10,8 @@ End date: <input type="text" id="writer-top-end-date" placeholder="2011-02-02 02
     const startDate = document.getElementById('writer-top-start-date').value;
     const endDate = document.getElementById('writer-top-end-date').value;
     const writerTop = new WriterTop(forumIDs, startDate ,endDate);
-    writerTop.execute('writer-top')
-  }
+    writerTop.execute('writer-top', 'writer-summary-numb').then(() => {
+   document.querySelectorAll('.writer-item__details').forEach(div =>  div.onclick = (e) => {e.target.closest('.writer-item__details').classList.toggle('open')})
+})
+}
 </script>
