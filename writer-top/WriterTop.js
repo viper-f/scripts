@@ -32,11 +32,13 @@ class WriterTop {
 
     async processTopics() {
         const topicData = this.forumIds.flat(async (forumId) => {
-            return await this.apiCall('topic.get', {"forum_id": forumId}, ["id", "init_post", "last_post_date"])
+            return await this.apiCall('topic.get', {"forum_id": forumId}, ["id", "init_post", "last_post_date"], 'last_post')
         })
 
+        topicData.filter((topic) => {return parseInt(topic['last_post_date']) > this.startDate})
+
         await Promise.all(topicData.forEach(async (topicDatum) => {
-            this.findPosts(topicDatum['id'], topicDatum['init_post']);
+            const result = await this.findPosts(topicDatum['id'], topicDatum['init_post']);
         }))
     }
 
@@ -69,6 +71,7 @@ class WriterTop {
                 c = false;
             }
         }
+        return true
     }
 
     /**

@@ -77,27 +77,31 @@ test('test findPosts()', async () => {
                 )
         }))
 
-    //     .mockReturnValueOnce(
-    //     () =>
-    //         Promise.resolve({
-    //             json: () =>
-    //                 Promise.resolve(
-    //                     {
-    //                         "response": [
-    //                             {
-    //                                 "subject": "мыслефлуд",
-    //                                 "posted": "1727747638",
-    //                                 "user_id": "2189",
-    //                                 "id": "1008880",
-    //                                 "username": "test2"
-    //                             }
-    //                         ]
-    //                     }
-    //                 )
-    //         })
-    // );
+
     const top = new WriterTop(1, 0)
     const result = await top.findPosts(1, 1)
     expect(top.users).toStrictEqual({"2188": {"count": 1, "user_id": "2188", "user_name": "test1"}})
     expect(top.posts).toStrictEqual({"2188": [{"post_id": "1008879", "posted": 1727747637, "subject": "мыслефлуд", "user_id": "2188"}]})
+    global.fetch.mockClear();
+    delete global.fetch;
+})
+
+test('test processTopics()', () => {
+    global.fetch = jest.fn().mockImplementation(() =>
+        Promise.resolve({
+            json: () =>
+                Promise.resolve(
+                    {
+                        "response": [
+                            {
+                                "subject": "мыслефлуд",
+                                "posted": "1727747637",
+                                "user_id": "2188",
+                                "id": "1008879",
+                                "username": "test1"
+                            }
+                        ]
+                    }
+                )
+        }))
 })
