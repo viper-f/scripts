@@ -1,7 +1,14 @@
+Start date*: <input type="text" id="writer-top-start-date" placeholder="2011-01-01 01:01:01">
+End date: <input type="text" id="writer-top-start-date" placeholder="2011-02-02 02:02:02">
+<button onclick="writerTopCalculate()">Get TOP Writers</button>
 <div id="writer-top"></div>
 <script src="https://cdn.jsdelivr.net/gh/viper-f/scripts/writer-top/WriterTop.js"></script>
 <script>
   const forumIDs = [1,12,2,10,25]
-  const writerTop = new WriterTop(forumIDs, '2024-09-01 00:00:00');
-  writerTop.execute('writer-top')
+  function writerTopCalculate() {
+    const startDate = document.getElementById('writer-top-start-date');
+    const endDate = document.getElementById('writer-top-end-date');
+    const writerTop = new WriterTop(forumIDs, startDate ,endDate);
+    writerTop.execute('writer-top')
+  }
 </script>
