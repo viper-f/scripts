@@ -74,6 +74,9 @@ class WriterTop {
             const postDatum = postData[i];
             postDatum['posted'] = parseInt(postDatum['posted'])
             if (postDatum['posted'] >= this.startDate && postDatum['id'] !== initPostId) {
+                if(this.endDate && postDatum['posted'] > this.endDate) {
+                    continue;
+                }
                 if (!this.users[postDatum['user_id']]) {
                     this.users[postDatum['user_id']] = {
                         "user_id": postDatum['user_id'],
