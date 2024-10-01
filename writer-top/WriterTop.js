@@ -1,22 +1,28 @@
 class WriterTop {
-    constructor(forums, startDate) {
+    constructor(forums, startDate, endDate = null) {
         this.forumIds = forums;
-        this.startDate = startDate;
-        this.users = {}
-        this.posts = {}
+        this.startDate = this.toTimestamp(startDate);
+        this.endDate = endDate ?? this.toTimestamp(endDate);
+        this.users = {};
+        this.posts = {};
     }
+
+    toTimestamp = (strDate) => {
+        const dt = Date.parse(strDate);
+        return dt / 1000;
+    };
+
 
     dateFormat(timestamp) {
         var a = new Date(timestamp * 1000);
-        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      //  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         var year = a.getFullYear();
-        var month = months[a.getMonth()];
-        var date = a.getDate();
-        var hour = a.getHours();
-        var min = a.getMinutes();
-        var sec = a.getSeconds();
-        var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-        return time;
+        var month = ("00"+(a.getMonth() +1)).slice(-2);
+        var date = ("00"+a.getDate()).slice(-2);
+        var hour = ("00"+a.getHours()).slice(-2);
+        var min = ("00"+a.getMinutes()).slice(-2);
+        var sec = ("00"+a.getSeconds()).slice(-2);
+        return year + '-' + month + '-' + date + ' ' + hour + ':' + min + ':' + sec ;
     }
 
     async execute(div_id) {
@@ -131,5 +137,5 @@ class WriterTop {
 }
 
 if (typeof exports !== 'undefined') {
-    module.exports = { WriterTop };
+    module.exports =  WriterTop;
 }
