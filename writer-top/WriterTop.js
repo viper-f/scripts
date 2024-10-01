@@ -75,7 +75,7 @@ class WriterTop {
 
     async findPosts(topicIds, initPosts, limit, offset) {
         const postData = await this.apiCall('post.get', {"topic_id": topicIds},
-            ["id", "user_id", "topic_id", "username", "subject", "posted"], 'posted', 'desc');
+            ["id", "user_id", "topic_id", "username", "subject", "posted"], 'posted', 'desc', offset, limit);
         if (postData.length === 0) {
             return false;
         }
@@ -86,7 +86,7 @@ class WriterTop {
             postDatum['posted'] = parseInt(postDatum['posted'])
             if (postDatum['posted'] >= this.startDate && postDatum['id'] !== initPosts[postDatum['topic_id']]) {
                 if(this.endDate && postDatum['posted'] > this.endDate) {
-                     i+=1;
+                    i+=1;
                     continue;
                 }
                 if (!this.users[postDatum['user_id']]) {
@@ -147,17 +147,17 @@ class WriterTop {
             url += '&fields=' + fields.join(',')
         }
 
-        if (sortBy) {
+        if (sortBy != null) {
             url += '&sort_by='+sortBy;
         }
 
-        if (sortDir) {
+        if (sortDir != null) {
             url += '&sort_dir='+sortDir;
         }
-        if (skip) {
+        if (skip !== null) {
             url += '&skip='+skip;
         }
-        if (limit) {
+        if (limit !== null) {
             url += '&limit='+limit;
         }
         return url;
