@@ -1,6 +1,6 @@
 const WriterTop = require("../../writer-top/WriterTop.js")
 test('test render()', () => {
-    const top = new WriterTop(1, 0)
+    const top = new WriterTop([1], 0)
     top.users = {
         "1": {
             "user_name": "Test",
@@ -48,7 +48,7 @@ test('test apiCall()', async () => {
 })
 
 test('test combineUrl()', () => {
-    const top = new WriterTop(1, 0)
+    const top = new WriterTop([1], 0)
     expect(top.combineUrl('post.get')).toBe('/api.php?method=post.get')
     expect(top.combineUrl('post.get', {"topic_id": "25"})).toBe('/api.php?method=post.get&topic_id=25')
     expect(top.combineUrl('post.get', null, ['post_id'])).toBe('/api.php?method=post.get&fields=post_id')
@@ -78,7 +78,7 @@ test('test findPosts()', async () => {
         }))
 
 
-    const top = new WriterTop(1, 0)
+    const top = new WriterTop([1], 0)
     const result = await top.findPosts(1, 1)
     expect(top.users).toStrictEqual({"2188": {"count": 1, "user_id": "2188", "user_name": "test1"}})
     expect(top.posts).toStrictEqual({"2188": [{"post_id": "1008879", "posted": 1727747637, "subject": "мыслефлуд", "user_id": "2188"}]})
@@ -86,22 +86,32 @@ test('test findPosts()', async () => {
     delete global.fetch;
 })
 
-test('test processTopics()', () => {
-    global.fetch = jest.fn().mockImplementation(() =>
-        Promise.resolve({
-            json: () =>
-                Promise.resolve(
-                    {
-                        "response": [
-                            {
-                                "subject": "мыслефлуд",
-                                "posted": "1727747637",
-                                "user_id": "2188",
-                                "id": "1008879",
-                                "username": "test1"
-                            }
-                        ]
-                    }
-                )
-        }))
+// test('test processTopics()', () => {
+//     global.fetch = jest.fn().mockImplementation(() =>
+//         Promise.resolve({
+//             json: () =>
+//                 Promise.resolve(
+//                     {
+//                         "response": [
+//                             {
+//                                 "subject": "мыслефлуд",
+//                                 "posted": "1727747637",
+//                                 "user_id": "2188",
+//                                 "id": "1008879",
+//                                 "username": "test1"
+//                             }
+//                         ]
+//                     }
+//                 )
+//         }))
+// })
+
+test('test toTimestamp()', () => {
+    const top = new WriterTop([1], 0)
+    expect(top.toTimestamp('2020-02-02 12:02:20')).toBe(1580662940)
+})
+
+test('test dateFormat()', () => {
+    const top = new WriterTop([1], 0)
+    expect(top.dateFormat(1580662940)).toBe('2020-02-02 12:02:20')
 })
