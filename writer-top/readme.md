@@ -8,3 +8,5 @@ visible to anyone who is allowed to see the page.
 That's it.  
 The JS code is stored remotely, you do not need to save it on your forum. Every time it is updated it will automatically update on your 
 forum.
+
+https://cdn.jsdelivr.net/gh/viper-f/scripts@latest/writer-top/WriterTop.js

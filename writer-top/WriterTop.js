@@ -16,7 +16,6 @@ class WriterTop {
 
     dateFormat(timestamp) {
         var a = new Date(timestamp * 1000);
-      //  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         var year = a.getFullYear();
         var month = ("00"+(a.getMonth() +1)).slice(-2);
         var date = ("00"+a.getDate()).slice(-2);
@@ -40,7 +39,6 @@ class WriterTop {
             if (a.count > b.count) return -1;
             if (a.count === b.count) return 0;
         })
-        let total = 0
         users.forEach((user) => {
             const userPosts = this.posts[user['user_id']];
             html += `<div class="writer-item__container"><span class="writer-item__username">${user['user_name']}</span><span class="writer-item__numb">${user['count']}</span><span class="writer-item__details"><ul class="writer-item__details-list">`;
@@ -56,24 +54,37 @@ class WriterTop {
         let topicData = await Promise.all(this.forumIds.map(async (forumId) => {
             return await this.apiCall('topic.get', {"forum_id": forumId}, ["id", "init_post", "last_post_date"], 'last_post', 'desc')
         }))
-        topicData =  await topicData.flat(1)
+        topicData =  topicData.flat(1)
 
         topicData = topicData.filter((topic) => {return parseInt(topic['last_post_date']) > this.startDate})
+        let initPosts = {}
+        let topicIds = []
+        topicData.map((topicDatum) => {
+            initPosts[topicDatum['id']] = topicDatum['init_id'];
+            topicIds.push(topicDatum['id']);
+        })
 
-        await Promise.all(topicData.map(async (topicDatum) => {
-            const result = await this.findPosts(topicDatum['id'], topicDatum['init_post']);
-        }))
+        let result = true
+        let offset = 0
+        let limit = 100
+        while(result) {
+            result = await this.findPosts(topicIds.join(','), initPosts, limit, offset);
+            offset += limit
+        }
     }
 
-    async findPosts(topicId, initPostId) {
-        const postData = await this.apiCall('post.get', {"topic_id": topicId},
-            ["id", "user_id", "username", "subject", "posted"], 'posted', 'desc');
+    async findPosts(topicIds, initPosts, limit, offset) {
+        const postData = await this.apiCall('post.get', {"topic_id": topicIds},
+            ["id", "user_id", "topic_id", "username", "subject", "posted"], 'posted', 'desc');
+        if (postData.length === 0) {
+            return false;
+        }
         let c = true;
         let i = 0;
         while (c && i < postData.length) {
             const postDatum = postData[i];
             postDatum['posted'] = parseInt(postDatum['posted'])
-            if (postDatum['posted'] >= this.startDate && postDatum['id'] !== initPostId) {
+            if (postDatum['posted'] >= this.startDate && postDatum['id'] !== initPosts[postDatum['topic_id']]) {
                 if(this.endDate && postDatum['posted'] > this.endDate) {
                      i+=1;
                     continue;
@@ -99,7 +110,11 @@ class WriterTop {
                 c = false;
             }
         }
-        return true
+        if (postData.length < limit) {
+            return false
+        } else {
+            return true
+        }
     }
 
     /**
@@ -108,16 +123,19 @@ class WriterTop {
      * @param method - string
      * @param filters - object
      * @param fields - array
-     * @param sortBy = string
+     * @param sortBy - string
+     * @param sortDir - ASC/DESC
+     * @param skip - number, max 1000
+     * @param limit - number, default 50, max 100
      */
-    async apiCall(method, filters = null, fields = [], sortBy = null, sortDir = null) {
-        const response = await fetch(this.combineUrl(method, filters, fields, sortBy, sortDir))
+    async apiCall(method, filters = null, fields = [], sortBy = null, sortDir = null, skip = null, limit = null) {
+        const response = await fetch(this.combineUrl(method, filters, fields, sortBy, sortDir, skip, limit))
         const j = await response.json()
         return j['response']
         //  return response.json()
     }
 
-    combineUrl(method, filters = null, fields = [], sortBy = null, sortDir = null)
+    combineUrl(method, filters = null, fields = [], sortBy = null, sortDir = null, skip = null, limit = null)
     {
         let url = '/api.php?method='+method;
         if (filters) {
@@ -135,6 +153,12 @@ class WriterTop {
 
         if (sortDir) {
             url += '&sort_dir='+sortDir;
+        }
+        if (skip) {
+            url += '&skip='+skip;
+        }
+        if (limit) {
+            url += '&limit='+limit;
         }
         return url;
     }
