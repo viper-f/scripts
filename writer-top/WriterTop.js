@@ -25,9 +25,10 @@ class WriterTop {
         return year + '-' + month + '-' + date + ' ' + hour + ':' + min + ':' + sec ;
     }
 
-    async execute(div_id) {
+    async execute(div_id, total_id) {
         await this.processTopics();
         document.getElementById(div_id).innerHTML = this.render();
+        document.getElementById(total_id).innerHTML = this.posts.length;
     }
 
     render() {
@@ -38,6 +39,7 @@ class WriterTop {
             if (a.count > b.count) return -1;
             if (a.count === b.count) return 0;
         })
+        let total = 0
         users.forEach((user) => {
             const userPosts = this.posts[user['user_id']];
             html += `<div class="writer-item__container"><span class="writer-item__username">${user['user_name']}</span><span class="writer-item__numb">${user['count']}</span><span class="writer-item__details"><ul class="writer-item__details-list">`;
