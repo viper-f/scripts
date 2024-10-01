@@ -40,7 +40,7 @@ class WriterTop {
         })
         users.forEach((user) => {
             const userPosts = this.posts[user['user_id']];
-            html += `<div><span>${user['user_name']}</span><span>${user['count']}</span><span><ul>`;
+            html += `<div class="writer-item__container"><span class="writer-item__username">${user['user_name']}</span><span class="writer-item__numb">${user['count']}</span><span class="writer-item__details"><ul class="writer-item__details-list">`;
             userPosts.forEach((post) => {
                 html += `<li><a href="/viewtopic.php?pid=${post['post_id']}#p${post['post_id']}">${post['subject']}</a> (${this.dateFormat(post['posted'])})</li>`
             })
