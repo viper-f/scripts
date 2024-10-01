@@ -5,6 +5,7 @@ class WriterTop {
         this.endDate = endDate ? this.toTimestamp(endDate) : null;
         this.users = {};
         this.posts = {};
+        this.total = 0;
     }
 
     toTimestamp = (strDate) => {
@@ -28,7 +29,7 @@ class WriterTop {
     async execute(div_id, total_id) {
         await this.processTopics();
         document.getElementById(div_id).innerHTML = this.render();
-        document.getElementById(total_id).innerHTML = this.posts.length;
+        document.getElementById(total_id).innerHTML = this.total;
     }
 
     render() {
@@ -92,6 +93,7 @@ class WriterTop {
                     "subject": postDatum['subject'],
                     "posted": postDatum['posted']
                 })
+                this.total += 1;
                 i += 1;
             } else {
                 c = false;
