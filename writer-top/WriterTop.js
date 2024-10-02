@@ -5,6 +5,7 @@ class WriterTop {
         this.endDate = endDate ? this.toTimestamp(endDate) : null;
         this.users = {};
         this.posts = {};
+        this.topics = [];
         this.total = 0;
     }
 
@@ -51,25 +52,67 @@ class WriterTop {
     }
 
     async processTopics() {
-        let topicData = await Promise.all(this.forumIds.map(async (forumId) => {
-            return await this.apiCall('topic.get', {"forum_id": forumId}, ["id", "init_post", "last_post_date"], 'last_post', 'desc')
-        }))
-        topicData =  topicData.flat(1)
-
-        topicData = topicData.filter((topic) => {return parseInt(topic['last_post_date']) > this.startDate})
-        let initPosts = {}
-        let topicIds = []
-        topicData.map((topicDatum) => {
-            initPosts[topicDatum['id']] = topicDatum['init_id'];
-            topicIds.push(topicDatum['id']);
-        })
 
         let result = true
-        let offset = 0
+        let offset_topics = 0
         let limit = 100
+
         while(result) {
-            result = await this.findPosts(topicIds.join(','), initPosts, limit, offset);
-            offset += limit
+            result = await this.findTopics(this.forumIds.join(','), limit, offset_topics);
+            offset_topics += limit
+        }
+
+        let n = 0
+        while (n < this.topics.length) {
+            let postCount = 0
+            let initPosts = {}
+            let topicIds = []
+
+
+            while(postCount < 1000 && n < this.topics.length) {
+                postCount += (1 + parseInt(this.topics[n]['num_replies']))
+                initPosts[this.topics[n]['id']] = this.topics[n]['init_id'];
+                topicIds.push(this.topics[n]['id']);
+                n += 1
+            }
+
+            result = true
+            let offset_posts = 0
+            while (result) {
+                result = await this.findPosts(topicIds.join(','), initPosts, limit, offset_posts);
+                offset_posts += limit
+            }
+        }
+    }
+
+    async findTopics(forumIds, limit, offset) {
+        const topicData = await this.apiCall('topic.get', {"forum_id": forumIds},
+            ["id", "init_post", "last_post_date", "num_replies"], 'last_post', 'desc', offset, limit);
+        if (topicData.length === 0) {
+            return false;
+        }
+        let i = 0;
+        while (i < topicData.length) {
+            const topicDatum = topicData[i];
+            topicDatum['last_post_date'] = parseInt(topicDatum['last_post_date'])
+            if (topicDatum['last_post_date'] >= this.startDate) {
+                if (topicDatum['num_replies'] !== 0) {
+                    if (this.endDate && topicDatum['last_post_date'] > this.endDate) {
+                        i += 1;
+                        continue;
+                    }
+                    this.topics.push(topicDatum)
+                    this.total += 1;
+                    i += 1;
+                }
+            } else {
+                return false
+            }
+        }
+        if (topicData.length < limit) {
+            return false
+        } else {
+            return true
         }
     }
 
@@ -79,13 +122,13 @@ class WriterTop {
         if (postData.length === 0) {
             return false;
         }
-        let c = true;
+
         let i = 0;
-        while (c && i < postData.length) {
+        while (i < postData.length) {
             const postDatum = postData[i];
             postDatum['posted'] = parseInt(postDatum['posted'])
-            if (postDatum['posted'] >= this.startDate && postDatum['id'] !== initPosts[postDatum['topic_id']]) {
-                if(this.endDate && postDatum['posted'] > this.endDate) {
+            if (postDatum['posted'] >= this.startDate) {
+                if(this.endDate && postDatum['posted'] > this.endDate || postDatum['id'] === initPosts[postDatum['topic_id']]) {
                     i+=1;
                     continue;
                 }
@@ -107,7 +150,7 @@ class WriterTop {
                 this.total += 1;
                 i += 1;
             } else {
-                c = false;
+                return false;
             }
         }
         if (postData.length < limit) {
