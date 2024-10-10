@@ -222,7 +222,7 @@ class MybbAPI {
         return await this.findAll('post', filters, fields, sortBy, sortDir, limit);
     }
 
-    async findUser(entityType, filters = null, fields = [], sortBy = null, sortDir = null, limit = null) {
+    async findUsers(entityType, filters = null, fields = [], sortBy = null, sortDir = null, limit = null) {
         return await this.findAll('user', filters, fields, sortBy, sortDir, limit);
     }
 
