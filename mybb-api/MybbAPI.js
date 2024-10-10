@@ -65,7 +65,7 @@ class MybbAPI {
             sortFields: ["id", "subject", "num_replies", "num_posts"]
         },
         file: {
-            method: 'Получение информации о залитом файле',
+            method: 'board.getFileMetadata',
             fields: [],
             filers: ["filename", "admin"],
             sortFields: []
