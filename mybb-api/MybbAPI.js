@@ -227,7 +227,60 @@ export default class MybbAPI {
     }
 
     /**
-     *
+     * @param nativeFilters - {key1: value1, key2: value2}
+     * @param additionalFilters = {key1: {op: (eq,lte,gte,lt,gt), value: val1}}
+     * @param fields
+     * @param sortBy
+     * @param sortDir
+     * @param limit
+     * @returns {Promise<*[]>}
+     */
+    async findFilteredTopics( nativeFilters = null,
+                              additionalFilters = null,
+                              fields = [],
+                              sortBy = null,
+                              sortDir = null,
+                              limit = null) {
+        return this.findFiltered('topic', nativeFilters, additionalFilters, fields, sortBy, sortDir, limit);
+    }
+
+    /**
+     * @param nativeFilters - {key1: value1, key2: value2}
+     * @param additionalFilters = {key1: {op: (eq,lte,gte,lt,gt), value: val1}}
+     * @param fields
+     * @param sortBy
+     * @param sortDir
+     * @param limit
+     * @returns {Promise<*[]>}
+     */
+    async findFilteredPosts( nativeFilters = null,
+                              additionalFilters = null,
+                              fields = [],
+                              sortBy = null,
+                              sortDir = null,
+                              limit = null) {
+        return this.findFiltered('post', nativeFilters, additionalFilters, fields, sortBy, sortDir, limit);
+    }
+
+    /**
+     * @param nativeFilters - {key1: value1, key2: value2}
+     * @param additionalFilters = {key1: {op: (eq,lte,gte,lt,gt), value: val1}}
+     * @param fields
+     * @param sortBy
+     * @param sortDir
+     * @param limit
+     * @returns {Promise<*[]>}
+     */
+    async findFilteredUsers( nativeFilters = null,
+                              additionalFilters = null,
+                              fields = [],
+                              sortBy = null,
+                              sortDir = null,
+                              limit = null) {
+        return this.findFiltered('user', nativeFilters, additionalFilters, fields, sortBy, sortDir, limit);
+    }
+
+    /**
      * @param entityType
      * @param nativeFilters - {key1: value1, key2: value2}
      * @param additionalFilters = {key1: {op: (eq,lte,gte,lt,gt), value: val1}}
@@ -253,6 +306,8 @@ export default class MybbAPI {
                 throw new Error('Incorrect filtering field '+additionalFilterKey);
             }
         }
+
+        fields = fields.concat(Object.keys(additionalFilters))
 
         const queryLimit = limit ?? this.maxLimit;
         limit = limit ?? this.maxSkip;
