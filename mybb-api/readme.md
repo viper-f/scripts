@@ -122,7 +122,11 @@ Mybb API возвращает даты в формате Unix timestamp.
 Адрес файла на CDN  - https://cdn.jsdelivr.net/gh/viper-f/scripts@latest/mybb-api/MybbAPI.js  
 
 Чтобы подключить файл в свой скрипт, скрипту нужно добавить тип "модуль",
-а затем импортировать класс:
+а затем импортировать класс MybbAPI и создать один объект этого класса. 
+Все методы нужно вызывать из объекта.
+
+Методы для работы с API - асинхронные, поэтому добавляйте ```await``` перед
+вызовом.
 ```js
 <script type="module">
 import MybbAPI from 'https://cdn.jsdelivr.net/gh/viper-f/scripts@latest/mybb-api/MybbAPI.js';
