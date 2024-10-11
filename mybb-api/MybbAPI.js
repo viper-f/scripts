@@ -430,7 +430,10 @@ export default class MybbAPI {
     {
         let url = '/api.php?method='+method;
         if (filters) {
-            for (const [key, value] of Object.entries(filters)) {
+            for (let [key, value] of Object.entries(filters)) {
+                if(value.isArray()) {
+                    value = value.join(',')
+                }
                 url += '&' + key + '=' + value;
             }
         }
