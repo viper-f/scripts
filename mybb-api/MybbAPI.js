@@ -1,4 +1,4 @@
-class MybbAPI {
+export default class MybbAPI {
     maxSkip = 1000;
     maxLimit = 100;
     entityTypes = {
@@ -172,10 +172,10 @@ class MybbAPI {
     }
 
 
-    toTimestamp = (strDate) => {
+    toTimestamp(strDate) {
         const dt = Date.parse(strDate);
         return dt / 1000;
-    };
+    }
 
     dateFormat(timestamp) {
         var a = new Date(timestamp * 1000);
@@ -214,16 +214,90 @@ class MybbAPI {
         return rows[0];
     }
 
-    async findTopics(entityType, filters = null, fields = [], sortBy = null, sortDir = null, limit = null) {
+    async findTopics(filters = null, fields = [], sortBy = null, sortDir = null, limit = null) {
         return await this.findAll('topic', filters, fields, sortBy, sortDir, limit);
     }
 
-    async findPosts(entityType, filters = null, fields = [], sortBy = null, sortDir = null, limit = null) {
+    async findPosts(filters = null, fields = [], sortBy = null, sortDir = null, limit = null) {
         return await this.findAll('post', filters, fields, sortBy, sortDir, limit);
     }
 
-    async findUsers(entityType, filters = null, fields = [], sortBy = null, sortDir = null, limit = null) {
+    async findUsers(filters = null, fields = [], sortBy = null, sortDir = null, limit = null) {
         return await this.findAll('user', filters, fields, sortBy, sortDir, limit);
+    }
+
+    /**
+     *
+     * @param entityType
+     * @param nativeFilters - {key1: value1, key2: value2}
+     * @param additionalFilters = {key1: {op: (eq,lte,gte,lt,gt), value: val1}}
+     * @param fields
+     * @param sortBy
+     * @param sortDir
+     * @param limit
+     * @returns {Promise<*[]>}
+     */
+    async findFiltered(entityType,
+                       nativeFilters = null,
+                       additionalFilters = null,
+                       fields = [],
+                       sortBy = null,
+                       sortDir = null,
+                       limit = null) {
+
+        this.validateRequest(entityType, nativeFilters, fields, sortBy)
+
+        const schema = this.entityTypes[entityType];
+        for (const additionalFilterKey of Object.keys(additionalFilters)) {
+            if(!schema.fields.includes(additionalFilterKey)) {
+                throw new Error('Incorrect filtering field '+additionalFilterKey);
+            }
+        }
+
+        const queryLimit = limit ?? this.maxLimit;
+        limit = limit ?? this.maxSkip;
+        let offset = 0
+        let rows = [1]
+        let result = []
+        while(rows.length && offset < this.maxSkip && result.length < limit) {
+            rows = await this.apiCall(this.entityTypes[entityType].method, nativeFilters,
+                fields, sortBy, sortDir, offset, queryLimit);
+            offset += queryLimit
+            rows.map((row) => {
+                let add = true;
+                for (const [key, filter] of Object.entries(additionalFilters)) {
+                    if (!this.checkFilter(filter, row[key])) {
+                        add = false;
+                        break;
+                    }
+                }
+                if (add) {
+                    result.push(row)
+                }
+            })
+        }
+        return result;
+    }
+
+    checkFilter(filter, value) {
+        if(typeof filter['value'] === 'number') {
+            value = parseInt(value)
+        }
+        console.log(filter)
+        console.log(value)
+        switch(filter['op']) {
+            case 'eq':
+                return value === filter['value']
+            case 'gt':
+                return value > filter['value']
+            case 'lt':
+                return value < filter['value']
+            case 'gte':
+                return value >= filter['value']
+            case 'lte':
+                return value <= filter['value']
+        }
+        throw new Error('Unsupported operand type')
     }
 
     async findAll(entityType,
@@ -268,11 +342,11 @@ class MybbAPI {
             }
         }
 
-        for (const sortField of sortBy) {
-            if (!schema.sortFields.includes(sortField)) {
-                errors.push('Unsupported sort field '+sortField);
-            }
+
+        if (!schema.sortFields.includes(sortBy)) {
+            errors.push('Unsupported sort field '+sortBy);
         }
+
 
         if (errors.length) {
             throw new Error(errors.join("\n"))
@@ -325,8 +399,12 @@ class MybbAPI {
         return url;
     }
 
-}
+    formTopicUrl(id) {
+        return '/viewtopic.php?id='+id;
+    }
 
-if (typeof exports !== 'undefined') {
-    module.exports =  MybbAPI;
+    formPostUrl(id) {
+        return `/viewtopic.php?pid=${id}#p${id}`
+    }
+
 }
