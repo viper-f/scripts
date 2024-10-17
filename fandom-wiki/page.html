@@ -87,8 +87,9 @@
 <script src="wiki.js"></script>
 <script>
     const wiki = new Wiki();
-    wiki.loadMain()
-    wiki.loadPage()
+    wiki.loadMain().then(() => {
+        wiki.loadPage()
+    })
 
     function pageload(ppid) {
         const url = new URL(window.location.href);

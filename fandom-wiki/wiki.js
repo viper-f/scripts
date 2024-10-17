@@ -8,12 +8,14 @@ class Wiki {
     }
 
     async loadMain() {
-        const mainData = await this.loadData(this.main)
-        const mainDoc = this.parser.parseFromString(mainData, 'text/html');
-        this.mainDoc = mainDoc;
+        if(!this.mainDoc) {
+            const mainData = await this.loadData(this.main)
+            const mainDoc = this.parser.parseFromString(mainData, 'text/html');
+            this.mainDoc = mainDoc;
 
-        for (const id of ['navigation', 'header']) {
-            document.getElementById(id).innerHTML = mainDoc.getElementById(id).innerHTML
+            for (const id of ['navigation', 'header']) {
+                document.getElementById(id).innerHTML = mainDoc.getElementById(id).innerHTML
+            }
         }
     }
 
