@@ -1,0 +1,88 @@
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f6f6f6;
+        }
+        #header {
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+        }
+        #header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        #sidebar {
+            width: 200px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            position: fixed;
+            height: 100%;
+            overflow: auto;
+            border-right: 1px solid #d0d0d0;
+        }
+        #content {
+            margin-left: 220px;
+            padding: 15px;
+        }
+        h1 {
+            font-size: 24px;
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+        p {
+            line-height: 1.6;
+        }
+        #footer {
+            background-color: #f8f9fa;
+            color: #555;
+            text-align: center;
+            padding: 10px 0;
+            border-top: 1px solid #d0d0d0;
+            margin-top: 20px;
+        }
+        #sidebar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #sidebar ul li {
+            padding: 5px 0;
+        }
+        #sidebar ul li a {
+            text-decoration: none;
+            color: #0645ad;
+        }
+        #sidebar ul li a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div id="header"></div>
+
+<div id="sidebar">
+    <h1>Navigation</h1>
+    <ul id="navigation"></ul>
+</div>
+
+<div id="content"></div>
+
+<div id="footer">
+    <p>Here we can put a general fan-site disclaimer.</p>
+</div>
+
+<script type="module">
+    import Wiki from "./wiki.js"
+    const wiki = new Wiki();
+    wiki.loadMain()
+</script>
+
+

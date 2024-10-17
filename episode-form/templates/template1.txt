@@ -1,0 +1,10 @@
+[b]{Title|short-text}[/b]
+[table][tr][td]{Image|image}[/td][/tr][/table]
+{Characters|short-text}
+[quote]{Description|long-text}[/quote]
+
+
+[b]Episode Title[/b]
+[table][tr][td][img]...[/img][/td][/tr][/table]
+Characters
+[quote]Episode description[/quote]
