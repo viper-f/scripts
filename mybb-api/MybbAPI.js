@@ -372,7 +372,7 @@ export default class MybbAPI {
             rows = await this.apiCall(this.entityTypes[entityType].method, filters,
                 fields, sortBy, sortDir, offset, queryLimit);
             offset += queryLimit
-            result += rows
+            Array.prototype.push.apply(result,rows)
         }
         return result
     }
