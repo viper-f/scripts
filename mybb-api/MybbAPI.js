@@ -431,7 +431,7 @@ export default class MybbAPI {
         let url = '/api.php?method='+method;
         if (filters) {
             for (let [key, value] of Object.entries(filters)) {
-                if(value.isArray()) {
+                if(value instanceof Array) {
                     value = value.join(',')
                 }
                 url += '&' + key + '=' + value;
