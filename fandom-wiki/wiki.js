@@ -1,18 +1,32 @@
-export default class Wiki {
+class Wiki {
     constructor() {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         this.main = urlParams.get('fpid')
-        this.page = urlParams.get('ppid')
+        this.parser = new DOMParser();
+        this.mainDoc = null;
     }
 
     async loadMain() {
         const mainData = await this.loadData(this.main)
-        const parser = new DOMParser();
-        const mainDoc = parser.parseFromString(mainData, 'text/html');
+        const mainDoc = this.parser.parseFromString(mainData, 'text/html');
+        this.mainDoc = mainDoc;
 
         for (const id of ['navigation', 'header']) {
             document.getElementById(id).innerHTML = mainDoc.getElementById(id).innerHTML
+        }
+    }
+
+    async loadPage() {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const page = urlParams.get('ppid')
+        if (!page) {
+            document.getElementById('content').innerHTML = this.mainDoc.getElementById('content').innerHTML
+        } else {
+            const data = await this.loadData(page)
+         //   const doc = this.parser.parseFromString(data, 'text/html');
+            document.getElementById('content').innerHTML = data;
         }
     }
 

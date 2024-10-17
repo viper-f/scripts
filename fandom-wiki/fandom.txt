@@ -3,6 +3,7 @@
 <div id="content">This is the main page of the Baldur's Gate III fandom wiki.</div>
 
 <ul id="navigation">
+<li><a onclick="pageload('article1.txt')">Text</a></li>
 <li><h2 class="category">Main</h2></li>
 <li><a href="">Character List</a><li>
 <li><a href="">Episode List<li><a href="">

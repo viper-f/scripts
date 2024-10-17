@@ -1,1 +1,1 @@
-[title]
+<p>Some text, some text, and <a onclick="pageload('article2.txt')">link to article 2</a></p>
