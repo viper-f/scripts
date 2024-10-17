@@ -338,8 +338,7 @@ export default class MybbAPI {
         if(typeof filter['value'] === 'number') {
             value = parseInt(value)
         }
-        console.log(filter)
-        console.log(value)
+        
         switch(filter['op']) {
             case 'eq':
                 return value === filter['value']
