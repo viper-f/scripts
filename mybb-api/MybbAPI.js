@@ -398,7 +398,7 @@ export default class MybbAPI {
         }
 
 
-        if (!schema.sortFields.includes(sortBy)) {
+        if (sortBy && !schema.sortFields.includes(sortBy)) {
             errors.push('Unsupported sort field '+sortBy);
         }
 
