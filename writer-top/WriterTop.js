@@ -102,7 +102,7 @@ class WriterTop {
                         continue;
                     }
                     this.topics.push(topicDatum)
-                    this.total += 1;
+   //                 this.total += 1;
                     i += 1;
                 }
             } else {
