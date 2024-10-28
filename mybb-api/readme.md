@@ -147,8 +147,8 @@ let topics = await mybbapi.findFilteredTopis(
         }
     },
     ["id", "subject", "last_username"],
-    "posted",
-    "DESC");
+    "last_post",
+    "desc"); //mybb unsderstands sorting only in lower case
 
     const wrapper = document.getElementById('wrapper')
     for (const topic of topics) {
